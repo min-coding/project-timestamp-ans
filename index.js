@@ -21,9 +21,9 @@ app.get('/', function (req, res) {
 //If no date provided, generate current date
 app.get('/api', function (req, res) {
   let date = new Date();
-  const unixTimestamp = date.getTime();
+  const unix = date.getTime();
   const utc = date.toUTCString();
-  res.json({ unixTimestamp, utc });
+  res.json({ unix, utc });
 });
 
 app.get('/api/:date', function (req, res) {
@@ -50,11 +50,11 @@ app.get('/api/:date', function (req, res) {
     res.json({ error: 'Invalid Date' });
   } else {
     // .getTime() return unix . from Date object
-    const unixTimestamp = date.getTime();
+    const unix = date.getTime();
 
     // .toUTCstring() return UTC string from Date object
     const utc = date.toUTCString();
-    res.json({ unixTimestamp, utc });
+    res.json({ unix, utc });
   }
 });
 // listen for requests :)
