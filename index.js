@@ -5,7 +5,6 @@
 var express = require('express');
 var app = express();
 
-
 // enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 // so that your API is remotely testable by FCC
 var cors = require('cors');
@@ -19,43 +18,46 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
 
+//If no date provided, generate current date
 app.get('/api', function (req, res) {
   let date = new Date();
-  const unix = date.getTime();
+  const unixTimestamp = date.getTime();
   const utc = date.toUTCString();
-  res.json({ unix, utc });
-})
+  res.json({ unixTimestamp, utc });
+});
 
-// your first API endpoint...
 app.get('/api/:date', function (req, res) {
-  // timestamp API
-  const givenDate = req.params.date;
-
+  const paramDate = req.params.date;
   let date;
 
-  // check if no date provided
-  if (!givenDate) {
-    date = new Date();
-    
+  // check type of param (unix/utc) number string multiplied by 1 gives number, string gives NaN
+  const checkUnix = paramDate * 1;
+
+  if (isNaN(checkUnix)) {
+    date = new Date(paramDate);
   } else {
-    // check if unix time:
-    //    number string multiplied by 1 gives this number, data string gives NaN
-    const checkUnix = givenDate * 1;
-    date = isNaN(checkUnix) ? new Date(givenDate) : new Date(checkUnix);
+    date = new Date(checkUnix);
   }
+
+  /**
+   * Even it does the same thing, we can't just parsed paramDate, because if
+   * paramDate is string of number (unix) -> new Date() cannot instantiate 
+   * Date object from that. Need to turn that into Number first
+   */
 
   //check if valid format
   if (date == 'Invalid Date') {
     res.json({ error: 'Invalid Date' });
   } else {
-    const unix = date.getTime();
+    // .getTime() return unix . from Date object
+    const unixTimestamp = date.getTime();
+
+    // .toUTCstring() return UTC string from Date object
     const utc = date.toUTCString();
-    res.json({ unix, utc });
+    res.json({ unixTimestamp, utc });
   }
 });
 // listen for requests :)
 var listener = app.listen(3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
-
-
